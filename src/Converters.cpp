@@ -1,5 +1,10 @@
 #include "../include/Converters.hpp"
 
+
+std::vector<float> MINLUX = {0, 20, 50, 100, 100, 150, 200, 250, 300, 500, 750, 1500, 2000, 5000, 10000};
+std::vector<float> MAXLUX = {0, 50, 100, 200, 150, 250, 400, 350, 500, 700, 850, 2000, 5000, 20000};
+
+
 Converters::Converters(std::string iFileName, std::string oFileName)
 {
     this->iFileName = iFileName;
@@ -11,19 +16,27 @@ void Converters::csvToDat() {
     std::ifstream iFile(this->iFileName);
     std::ofstream oFile(this->oFileName);
     // Check if the file is open
-    if (!iFile.is_open() || !oFile.is_open()) {
+    if (!iFile.is_open() ) {
         std::cerr << "Error opening the file." << std::endl;
+        logError(ERROR_INP_FILE);
         return;
     }
 
+    if (!oFile.is_open()) {
+        std::cerr << "Error opening the file." << std::endl;
+        logError(ERROR_OUT_FILE);
+        return;
+    }
 
     // read each line
     std::string line = "";
     bool firstRow = true;
+    int linenum = 0;
     while (std::getline(iFile, line)) {
+        linenum++;
         if (firstRow) {firstRow = false; continue;}
         Record record = Record(line);
-        if (!record.isvalid()) continue;
+        if (!record.isvalid()) {logError(ERROR_DATA_PACK, linenum);continue;}
         oFile<<record.toHex()<<"\n";
     }
 
@@ -32,11 +45,44 @@ void Converters::csvToDat() {
 }
 void Converters::datToCsv()
 {
+    std::ifstream iFile(this->iFileName);
+    std::ofstream oFile(this->oFileName); 
+
+   // Check if the file is open
+    if (!iFile.is_open() ) {
+        std::cerr << "Error opening the file." << std::endl;
+        logError(ERROR_INP_FILE);
+        return;
+    }
+
+    if (!oFile.is_open()) {
+        std::cerr << "Error opening the file." << std::endl;
+        logError(ERROR_OUT_FILE);
+        return;
+    }
+
+    // read each line
+     std::string line = "";
+     int linenum = 0;
+    oFile<<"id,time,location,value,condition\n";
+    while (std::getline(iFile, line)) {
+      linenum++;
+       HexRow hexrow = HexRow(line);
+       if (!hexrow.isvalid()) {logError(ERROR_DATA_PACK, linenum);continue;}
+
+        oFile<<hexrow.toCsv();
+    
+
+
+     
+    }
+
 }
 
 Record::Record(std::string row)
 {
     this->valid = true;
+
     std::stringstream ss(row);
     std::string token;
 
@@ -180,7 +226,9 @@ std::string Record::toHex()
     }
     temp.clear();
     temp.str("");
-    out << this->checkSum() << " "
+
+    int checkSum = this->checkSum();
+    out <<((checkSum <= 0xF) ? "0": "")<< this->checkSum() << " "
         << "a9";
     return out.str();
 }
@@ -188,8 +236,11 @@ std::string Record::toHex()
 HexRow::HexRow(std::string row) {
 
     // example of row "A0 0E 02 65 4E 6F A0 02 43 C8 03 D7 47 A9"
+     std::string const SAMPLE = "a0 0e 01 65 84 ed a0 02 44 b4 86 b8 43 a9";
+       this->valid = true;
+ if ((row.length() - 1)!= SAMPLE.length()) {cout<<row.length()<<" "<<SAMPLE.length()<<std::endl;this->valid = false; return;}
 
-    this->valid = true;
+  
     const int rowlen = 43;
     // if (row.length() != rowlen) {this->valid = false; return;}
     std::string hstart, hlen, hid, htime[4], hlocation, hlux[4];
@@ -199,7 +250,7 @@ HexRow::HexRow(std::string row) {
     >>htime[0]>>htime[1]>>htime[2]>>htime[3]
     >>hlocation
     >>hlux[0]>>hlux[1]>>hlux[2]>>hlux[3];
-    std::cout<<hstart<<"\n";
+    // std::cout<<hstart<<"\n";
     try {
         this->id = stoi(hid, nullptr, 16);
         this->timestamp = stoi(htime[0] + htime[1] + htime[2] + htime[3], nullptr, 16);
@@ -213,8 +264,7 @@ HexRow::HexRow(std::string row) {
         union {
             float f;
             uint32_t i;
-        }
-        converter;
+        } converter;
         converter.i = num;
         this->lux = converter.f;
        
@@ -245,3 +295,34 @@ bool HexRow::isvalid() {
     return this->valid;
 }
 
+
+
+std::string HexRow::getBright() {
+    int loc = this->location;
+ if (this->lux < MINLUX[loc]) return "dark";
+ if (this->lux > MAXLUX[loc]) return "bright";
+ return "good";
+}
+
+std::string HexRow::toCsv() {
+    std::stringstream ss;
+
+      ss<<this->id<<","
+       <<timestampToTime(this->timestamp)<<","
+       <<this->location<<","
+       <<this->lux<<","
+       <<this->getBright()<<"\n";
+
+    return ss.str();
+}
+
+std::string timestampToTime(int timestamp) {
+    std::time_t t = static_cast<std::time_t>(timestamp);
+    std::tm tmStruct = *std::localtime(&t);
+
+    // Format the time
+    std::stringstream ss;
+    ss << std::put_time(&tmStruct, "%Y:%m:%d %H:%M:%S");
+
+    return ss.str();
+}

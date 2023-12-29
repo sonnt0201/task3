@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include "Logger.hpp"
 #include <string>
 
 #pragma once

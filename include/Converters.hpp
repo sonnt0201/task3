@@ -5,13 +5,19 @@
 #include <vector>
 #include "MyIO.hpp"
 #include <fstream>
+#include <map>
+#include "Logger.hpp"
 #pragma once
+
+// extern std::vector<float> MINLUX;
+// extern std::vector<float> MAXLUX;
 
 
 class Converters {
     private:
     std::string iFileName;
     std::string oFileName;
+    
     
 
     public:
@@ -59,5 +65,8 @@ class HexRow {
     int getTimestamp();
     int getLocation();
     float getLux();
-    int getBright();
+    std::string getBright();
+    std::string toCsv();
 };
+
+std::string timestampToTime(int timestamp); 

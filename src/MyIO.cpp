@@ -24,7 +24,7 @@ int MyIO::setupInput()
     if (first.length() <= EXT_LEN || sec.length() <= EXT_LEN)
         return INVALID;
 
-    std::cout << (first.substr(first.length() - EXT_LEN, EXT_LEN) == ".csv") << std::endl;
+    // std::cout << (first.substr(first.length() - EXT_LEN, EXT_LEN) == ".csv") << std::endl;
 
     if (
         (first.substr(first.length() - EXT_LEN, EXT_LEN) == ".dat") && (sec.substr(sec.length() - EXT_LEN, EXT_LEN) == ".csv"))
