@@ -16,12 +16,12 @@ int main(int argv, char** argc) {
   ;
 
 
-  MyIO io = MyIO(argv, argc);
+  // MyIO io = MyIO(argv, argc);
 
-  if (io.inputType == ENCODE) {
-    Converters con = Converters(io.iFile, io.oFile);
-    con.csvToDat();
-  }
+  // if (io.inputType == ENCODE) {
+  //   Converters con = Converters(io.iFile, io.oFile);
+  //   con.csvToDat();
+  // }
 
   return 0;
  

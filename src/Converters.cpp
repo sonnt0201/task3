@@ -186,17 +186,20 @@ std::string Record::toHex()
 }
 
 HexRow::HexRow(std::string row) {
+
+    // example of row "A0 0E 02 65 4E 6F A0 02 43 C8 03 D7 47 A9"
+
     this->valid = true;
     const int rowlen = 43;
-    if (row.length() != rowlen) {this->valid = false; return;}
+    // if (row.length() != rowlen) {this->valid = false; return;}
     std::string hstart, hlen, hid, htime[4], hlocation, hlux[4];
     std::stringstream ss(row);
 
-    ss>>hstart>>hlen>>hid
+    ss>> std::ws>>hstart>>hlen>>hid
     >>htime[0]>>htime[1]>>htime[2]>>htime[3]
     >>hlocation
     >>hlux[0]>>hlux[1]>>hlux[2]>>hlux[3];
-
+    std::cout<<hstart<<"\n";
     try {
         this->id = stoi(hid, nullptr, 16);
         this->timestamp = stoi(htime[0] + htime[1] + htime[2] + htime[3], nullptr, 16);
@@ -236,5 +239,9 @@ int HexRow::getLocation() {
 
 float HexRow::getLux() {
     return this->lux;
+}
+
+bool HexRow::isvalid() {
+    return this->valid;
 }
 
