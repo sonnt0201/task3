@@ -236,10 +236,10 @@ std::string Record::toHex()
 HexRow::HexRow(std::string row) {
 
     // example of row "A0 0E 02 65 4E 6F A0 02 43 C8 03 D7 47 A9"
-     std::string const SAMPLE = "a0 0e 01 65 84 ed a0 02 44 b4 86 b8 43 a9";
+    //  std::string const SAMPLE = "a0 0e 01 65 84 ed a0 02 44 b4 86 b8 43 a9 ";
        this->valid = true;
- if ((row.length() - 1)!= SAMPLE.length()) {cout<<row.length()<<" "<<SAMPLE.length()<<std::endl;this->valid = false; return;}
 
+ 
   
     const int rowlen = 43;
     // if (row.length() != rowlen) {this->valid = false; return;}
