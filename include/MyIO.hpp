@@ -23,7 +23,6 @@ class MyIO
 private:
     int argv;
     char **argc;
-
     int setupInput();
 
 public:

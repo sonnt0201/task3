@@ -1,6 +1,8 @@
 #include "../include/Converters.hpp"
 
-
+/*
+Constant lux standards
+*/
 std::vector<float> MINLUX = {0, 20, 50, 100, 100, 150, 200, 250, 300, 500, 750, 1500, 2000, 5000, 10000};
 std::vector<float> MAXLUX = {0, 50, 100, 200, 150, 250, 400, 350, 500, 700, 850, 2000, 5000, 20000};
 
@@ -10,6 +12,7 @@ Converters::Converters(std::string iFileName, std::string oFileName)
     this->iFileName = iFileName;
     this->oFileName = oFileName;
 };
+
 
 void Converters::csvToDat() {
 
@@ -43,6 +46,8 @@ void Converters::csvToDat() {
 
 
 }
+
+
 void Converters::datToCsv()
 {
     std::ifstream iFile(this->iFileName);
@@ -78,6 +83,7 @@ void Converters::datToCsv()
     }
 
 }
+
 
 Record::Record(std::string row)
 {

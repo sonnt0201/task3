@@ -9,10 +9,10 @@
 #include "Logger.hpp"
 #pragma once
 
-// extern std::vector<float> MINLUX;
-// extern std::vector<float> MAXLUX;
-
-
+/*
+Converters' object encode .csv file to .dat or decode .dat to .csv.
+Initialized with input and output file names from MyIO.
+*/
 class Converters {
     private:
     std::string iFileName;
@@ -22,12 +22,24 @@ class Converters {
 
     public:
     Converters(std::string iFileName, std::string oFileName);
+    /*
+    Use in case input type is ENCODE.
+    */
     void csvToDat();
+
+    /*
+    Use in case input type is DEOCDE.
+    */  
     void datToCsv();
    
     
 };
 
+/*
+Record extract, save and handle a csv line.
+Encode a record data to a hex line.
+Init with a row of csv file and extract to a record data.
+*/
 class Record {
     private:
     std::string raw;
@@ -53,6 +65,10 @@ class Record {
 
 };
 
+/*
+Init with a hex row line from .dat file.
+Decode a .dat line to record data
+*/
 class HexRow {
     private:
     int id, timestamp, location;
@@ -66,7 +82,10 @@ class HexRow {
     int getLocation();
     float getLux();
     std::string getBright();
+
+    // return a csv line for Converters.
     std::string toCsv();
 };
 
+// convert timestamp(in second) to formated time.
 std::string timestampToTime(int timestamp); 
